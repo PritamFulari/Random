@@ -1,0 +1,44 @@
+DECLARE
+   CURSOR GFG (Min_rank NUMBER) IS
+      SELECT Id, name, rank
+      FROM Geeks
+      WHERE rank > Min_rank;
+
+--    Declare variables 
+   cur_id Geeks.Id%TYPE;
+   cur_name Geeks.name%TYPE;
+   cur_rank Geeks.rank%TYPE;
+BEGIN
+   -- Open and fetch data using the cursor
+   OPEN GFG(951);
+   LOOP
+      FETCH GFG INTO cur_id, cur_name, cur_rank;
+      EXIT WHEN GFG%NOTFOUND;
+
+      -- Process fetched data
+      DBMS_OUTPUT.PUT_LINE('ID: ' || cur_id || ', Name: ' || cur_name || ', Rank: ' || cur_rank);
+   END LOOP;
+
+   -- Close the cursor
+   CLOSE GFG;
+END;
+
+
+
+DECLARE
+--
+I NUMBER;
+
+BEGIN
+
+I :=&I;
+
+FOR I IN 1...N
+LOOP 
+   FOR J IN 1...N
+   LOOP
+   DBMS_OUTPUT.PUT_LINE("*");
+   END LOOP
+   DBMS_OUTPUT.NEW_LINE;
+END LOOP;
+END;

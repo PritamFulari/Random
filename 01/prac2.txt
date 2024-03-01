@@ -1,0 +1,58 @@
+PS C:\Users\HP> mongosh
+Current Mongosh Log ID: 657a002a63ebf9e4efd568c3
+Connecting to:          mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.0.1
+Using MongoDB:          7.0.2
+Using Mongosh:          2.0.1
+mongosh 2.1.1 is available for download: https://www.mongodb.com/try/download/shell
+
+For mongosh info see: https://docs.mongodb.com/mongodb-shell/
+
+------
+   The server generated these startup warnings when booting
+   2023-12-05T21:09:36.049+05:30: Access control is not enabled for the database. Read and write access to data and configuration is unrestricted
+------
+
+test> use Gfg
+switched to db Gfg
+Gfg> db.createCollection("Tea", { validator: { $jsonSchema: { bsonType: "object", required: ["type", "origin", "time_Req"], properties: { type: { bsonType: "string", description: "'type' must be a string and is required" }, origin: { bsonType: "string", description: "'origin' must be a string and is required " }, time_Req: { bsonType: "int", minimum: 1, maximum: 20, description: "'time_Req' must be integer in [1,20] and is required" } } } } })
+{ ok: 1 }
+Gfg> db.Tea.insertOne({type:"Green",origin:"China",time_Req:4});
+{
+  acknowledged: true,
+  insertedId: ObjectId("657a00ae63ebf9e4efd568c4")
+}
+Gfg> db.Tea.insertOne({type:"Black",origin:"India",time_Req:5});
+{
+  acknowledged: true,
+  insertedId: ObjectId("657a00c863ebf9e4efd568c5")
+}
+Gfg> db.Tea.insertOne({type:"Normal ",origin:"India",time_Req:"Unknown"});
+Uncaught:
+MongoServerError: Document failed validation
+Additional information: {
+  failingDocumentId: ObjectId("657a010463ebf9e4efd568c6"),
+  details: {
+    operatorName: '$jsonSchema',
+    title: 'Tea object validation',
+    schemaRulesNotSatisfied: [
+      {
+        operatorName: 'properties',
+        propertiesNotSatisfied: [
+          {
+            propertyName: 'time_Req',
+            description: "'time_Req' must be integer in [1,20] and is required",
+            details: [
+              {
+                operatorName: 'bsonType',
+                specifiedAs: { bsonType: 'int' },
+                reason: 'type did not match',
+                consideredValue: 'Unknown',
+                consideredType: 'string'
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

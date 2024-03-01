@@ -1,0 +1,122 @@
+//
+// Standard Views
+
+// They are read only and not store on the disk.
+// They use the indexes of the original collection.
+// They lack in performance.
+// They dont require maintenance
+
+// On-Demand Materialized Views
+
+// They are stored on disk.
+// Indexed can be created directly
+// They are better at performance
+// They require maintenance when there are updates in collection.
+// //
+
+// use GeeksforGeeks;
+
+db.createCollection("Teacher");
+
+db.Teacher.insertMany([{ name: "Anil", Age: 28, Salary: 25000, year: 2 },{ name: "Sunil", Age: 35, Salary: 35000, year: 5 },{ name: "Ajay", Age: 25, Salary: 45000, year: 10 },{ name: "Amit", Age: 40, Salary: 60000, year: 12 },]);
+
+db.createView("ExperiencedTeacher", "Teacher", [{ $match: { year: { $gt: 7 } } },]);
+
+db.ExperiencedTeacher.find();
+
+db.createCollection("ExperiencedTeacher", {
+  viewOn: "Teacher",
+  pipeline: [{ $match: { year: { $gt: 7 } } }],
+});
+
+db.ExperiencedTeacher.aggregate([{ $sort: { year: 1 } }, { $unset: ["_id"] }]);
+
+// ************** Use a View to Join Two Collections  **************
+
+// Assume you have a MongoDB connection established and a 'db' object representing the database.
+
+// Creating 'users' collection
+
+db.createCollection("users");
+
+// Inserting sample data into 'users' collection
+db.users.insertMany([
+  { name: "Anil", age: 25 },
+  { name: "Jay", age: 30 },
+  { name: "Om", age: 22 },
+]);
+
+// Creating 'orders' collection
+
+db.createCollection("orders"); // Second Collection
+
+// Inserting sample data into 'orders' collection
+
+db.orders.insertMany([
+  { user_id: 1, product: "Pen", quantity: 2 },
+  { user_id: 2, product: "Pencil", quantity: 1 },
+  { user_id: 3, product: "Sneaker", quantity: 3 },
+]);
+
+db.createView("userOrders", "users", [
+  {
+    $lookup: {
+      from: "orders",
+      localField: "_id",
+      foreignField: "user_id",
+      as: "orders",
+    },
+  },
+  { $unwind: { path: "$orders",preserveNullAndEmptyArrays:true } },
+  {
+    $project: {
+      _id: 1,
+      name: 1,
+      orderId: "$orders._id",
+      product: "$orders.product",
+      quantity: "$orders.quantity",
+    },
+  },
+]);
+
+db.userOrders.find();
+
+// ************** Modify a View  **************
+
+db.createView("ExperiencedTeacher", "Teacher", [
+  { $match: { year: { $gt: 7 } } },
+]);
+
+// Drop and Recreate the View
+
+db.ExperiencedTeacher.drop();
+
+db.createView("ExperiencedTeacher", "Teacher", [
+  { $match: { year: { $lt: 7 } } },
+]);
+
+db.runCommand({
+  collMod: "ExperiencedTeacher",
+  viewOn: "Teacher",
+  pipeline: [{ $match: { year: { $gt: 7 } } }],
+});
+
+
+
+
+db.createView(
+  "joined_view_name", // View name
+  "collection1_name", // Source collection 1
+  [
+    {
+      // Pipeline for collection 1
+      $lookup: {
+        from: "collection2_name", // Source collection 2
+        localField: "field_in_collection1",
+        foreignField: "field_in_collection2",
+        as: "joined_data",
+      },
+    },
+    // Additional pipeline 
+  ]
+);

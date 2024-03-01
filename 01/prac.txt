@@ -1,0 +1,356 @@
+MongoDB :
+MongoDB was released in February 2009. It is an open-source document-oriented database. 
+It is classified as a NoSQL database. The structure of the data in the collection is dynamic. 
+It follows the CAP theorem (Consistency Availability and Partition tolerance).
+ It is unstructured language. It provides horizontal scalability.
+  It provides high-performance data persistence. It solved the problem of scalability and agility.
+
+
+
+db.employee.insertMany({name:"Om",age:23,role:"HR"}, {name:"Jay",age:25,gender:"M",role:"SDE"},{name:"Anil",age:27,gender:"M",role:"DA"},{name:"Jaya",age:29,role:"Manager"},{name:"Nita",age:32,gender:"F",role:"CEO"}  );
+
+
+db.employee.insertMany({name:"Om",age:23,role:"HR", status:"Married"}, {name:"Jay",age:25,gender:"M",role:"SDE",status:"Married"},{name:"Anil",age:27,gender:"M",role:"DA",status:"Married"},{name:"Jaya",age:29,role:"Manager",status:"Unmarried"},{name:"Nita",age:32,gender:"F",role:"CEO",status:"Married"}  );
+
+
+
+
+
+let myschema ={
+    $jsonSchema:
+     {
+        required: [ "name", "age", "role" ], 
+        properties: 
+        {
+            name: { bsonType: "string" },
+            age: { bsonType: "int" },
+            role: { bsonType: "string" }
+        } 
+    
+    }}
+
+let myschema ={$jsonSchema: {required: [ "name", "age", "role" ], properties: {name: { bsonType: "string" },age: { bsonType: "int" },role: { bsonType: "string" } } }}
+
+
+db.employee.updateMany({ $nor: [ myschema ]},{  $set: { isValid: false }})
+
+**********************************************
+**********************************************
+**********************************************
+
+Windows PowerShell
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Install the latest PowerShell for new features and improvements! https://aka.ms/PSWindows
+
+PS C:\Users\HP> mongosh
+Current Mongosh Log ID: 657a0c7838fa200afd74740b
+Connecting to:          mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.0.1
+Using MongoDB:          7.0.2
+Using Mongosh:          2.0.1
+mongosh 2.1.1 is available for download: https://www.mongodb.com/try/download/shell
+
+For mongosh info see: https://docs.mongodb.com/mongodb-shell/
+
+------
+   The server generated these startup warnings when booting
+   2023-12-05T21:09:36.049+05:30: Access control is not enabled for the database. Read and write access to data and configuration is unrestricted
+------
+
+test> use GeeksforGeek
+switched to db GeeksforGeek
+GeeksforGeek> db.employee.insertMany([{name:"Om",age:23,role:"HR", status:"Married"}, {name:"Jay",age:25,gender:"M",role:"SDE",status:"Married"},{name:"Anil",age:27,gender:"M",role:"DA",status:"Married"},{name:"Jaya",age:29,role:"Manager",status:"Unmarried"},{name:"Nita",age:32,gender:"F",role:"CEO",status:"Married"}  ]);
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId("657a0d6e38fa200afd74740c"),
+    '1': ObjectId("657a0d6e38fa200afd74740d"),
+    '2': ObjectId("657a0d6e38fa200afd74740e"),
+    '3': ObjectId("657a0d6e38fa200afd74740f"),
+    '4': ObjectId("657a0d6e38fa200afd747410")
+  }
+}
+GeeksforGeek> //Schema Definition
+
+GeeksforGeek> let myschema ={$jsonSchema: {required: [ "name", "age", "role" ], properties: {name: { bsonType: "string" },age: { bsonType: "int" },gender: {bsonType: "string"},role: { bsonType: "string" } } }};
+
+GeeksforGeek> ///Documents that match the Schema
+
+GeeksforGeek> db.employee.aggregate([{$match:myschema}]);
+[
+  {
+    _id: ObjectId("657a0d6e38fa200afd74740c"),
+    name: 'Om',
+    age: 23,
+    role: 'HR',
+    status: 'Married'
+  },
+  {
+    _id: ObjectId("657a0d6e38fa200afd74740d"),
+    name: 'Jay',
+    age: 25,
+    gender: 'M',
+    role: 'SDE',
+    status: 'Married'
+  },
+  {
+    _id: ObjectId("657a0d6e38fa200afd74740e"),
+    name: 'Anil',
+    age: 27,
+    gender: 'M',
+    role: 'DA',
+    status: 'Married'
+  },
+  {
+    _id: ObjectId("657a0d6e38fa200afd74740f"),
+    name: 'Jaya',
+    age: 29,
+    role: 'Manager',
+    status: 'Unmarried'
+  },
+  {
+    _id: ObjectId("657a0d6e38fa200afd747410"),
+    name: 'Nita',
+    age: 32,
+    gender: 'F',
+    role: 'CEO',
+    status: 'Married'
+  }
+]
+GeeksforGeek> let myschema ={$jsonSchema: {required: [ "name", "age", "role" ], properties: {name: { bsonType: "string" },age: { bsonType: "int" },role: { bsonType: "string" } } }}
+
+GeeksforGeek> ///Documents that match the Schema
+
+GeeksforGeek> db.employee.aggregate([{$match:myschema}]);
+[
+  {
+    _id: ObjectId("657a0d6e38fa200afd74740c"),
+    name: 'Om',
+    age: 23,
+    role: 'HR',
+    status: 'Married'
+  },
+  {
+    _id: ObjectId("657a0d6e38fa200afd74740d"),
+    name: 'Jay',
+    age: 25,
+    gender: 'M',
+    role: 'SDE',
+    status: 'Married'
+  },
+  {
+    _id: ObjectId("657a0d6e38fa200afd74740e"),
+    name: 'Anil',
+    age: 27,
+    gender: 'M',
+    role: 'DA',
+    status: 'Married'
+  },
+  {
+    _id: ObjectId("657a0d6e38fa200afd74740f"),
+    name: 'Jaya',
+    age: 29,
+    role: 'Manager',
+    status: 'Unmarried'
+  },
+  {
+    _id: ObjectId("657a0d6e38fa200afd747410"),
+    name: 'Nita',
+    age: 32,
+    gender: 'F',
+    role: 'CEO',
+    status: 'Married'
+  }
+]
+GeeksforGeek> db.dropDatabase();
+{ ok: 1, dropped: 'GeeksforGeek' }
+GeeksforGeek> use GeeksforGeek
+already on db GeeksforGeek
+GeeksforGeek> db.createCollection("employee");
+{ ok: 1 }
+GeeksforGeek> db.employee.insertMany([{name:"Om",age:23,role:"HR", status:"Married"}, {name:"Jay",age:25,gender:"M",role:"SDE",status:"Married"},{name:"Anil",age:27,gender:"M",role:"DA",status:"Married"},{name:"Jaya",age:29,role:"Manager",status:"Unmarried"},{name:"Nita",age:32,gender:"F",role:"CEO",status:"Married"}  ]);
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId("657a0fc038fa200afd747411"),
+    '1': ObjectId("657a0fc038fa200afd747412"),
+    '2': ObjectId("657a0fc038fa200afd747413"),
+    '3': ObjectId("657a0fc038fa200afd747414"),
+    '4': ObjectId("657a0fc038fa200afd747415")
+  }
+}
+GeeksforGeek> let myschema ={$jsonSchema: {required: [ "name", "age", "role" ], properties: {name: { bsonType: "string" },age: { bsonType: "int" },role: { bsonType: "string" } } }}
+
+GeeksforGeek> ///Documents that match the Schema
+
+GeeksforGeek> db.employee.aggregate([{$match:myschema}]);
+[
+  {
+    _id: ObjectId("657a0fc038fa200afd747411"),
+    name: 'Om',
+    age: 23,
+    role: 'HR',
+    status: 'Married'
+  },
+  {
+    _id: ObjectId("657a0fc038fa200afd747412"),
+    name: 'Jay',
+    age: 25,
+    gender: 'M',
+    role: 'SDE',
+    status: 'Married'
+  },
+  {
+    _id: ObjectId("657a0fc038fa200afd747413"),
+    name: 'Anil',
+    age: 27,
+    gender: 'M',
+    role: 'DA',
+    status: 'Married'
+  },
+  {
+    _id: ObjectId("657a0fc038fa200afd747414"),
+    name: 'Jaya',
+    age: 29,
+    role: 'Manager',
+    status: 'Unmarried'
+  },
+  {
+    _id: ObjectId("657a0fc038fa200afd747415"),
+    name: 'Nita',
+    age: 32,
+    gender: 'F',
+    role: 'CEO',
+    status: 'Married'
+  }
+]
+GeeksforGeek> db.employee.insertMany([{name:"Ram",age:23,role:2, status:"Married"},  ]);
+{
+  acknowledged: true,
+  insertedIds: { '0': ObjectId("657a103e38fa200afd747416") }
+}
+GeeksforGeek> db.employee.aggregate([{$match:myschema}]);
+[
+  {
+    _id: ObjectId("657a0fc038fa200afd747411"),
+    name: 'Om',
+    age: 23,
+    role: 'HR',
+    status: 'Married'
+  },
+  {
+    _id: ObjectId("657a0fc038fa200afd747412"),
+    name: 'Jay',
+    age: 25,
+    gender: 'M',
+    role: 'SDE',
+    status: 'Married'
+  },
+  {
+    _id: ObjectId("657a0fc038fa200afd747413"),
+    name: 'Anil',
+    age: 27,
+    gender: 'M',
+    role: 'DA',
+    status: 'Married'
+  },
+  {
+    _id: ObjectId("657a0fc038fa200afd747414"),
+    name: 'Jaya',
+    age: 29,
+    role: 'Manager',
+    status: 'Unmarried'
+  },
+  {
+    _id: ObjectId("657a0fc038fa200afd747415"),
+    name: 'Nita',
+    age: 32,
+    gender: 'F',
+    role: 'CEO',
+    status: 'Married'
+  }
+]
+GeeksforGeek> db.employee.find( { $nor: [ myschema ] } )
+[
+  {
+    _id: ObjectId("657a103e38fa200afd747416"),
+    name: 'Ram',
+    age: 23,
+    role: 2,
+    status: 'Married'
+  }
+]
+GeeksforGeek> //Update Documents that Don't Match the Schema
+
+GeeksforGeek> db.inventory.updateMany({ $nor: [ myschema ]},{  $set: { isValisValid: false }})
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 0,
+  modifiedCount: 0,
+  upsertedCount: 0
+}
+GeeksforGeek> db.inventory.find()
+
+GeeksforGeek> db.employee.updateMany({ $nor: [ myschema ]},{  $set: { isValid: false }})
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+GeeksforGeek> db.employee.find()
+[
+  {
+    _id: ObjectId("657a0fc038fa200afd747411"),
+    name: 'Om',
+    age: 23,
+    role: 'HR',
+    status: 'Married'
+  },
+  {
+    _id: ObjectId("657a0fc038fa200afd747412"),
+    name: 'Jay',
+    age: 25,
+    gender: 'M',
+    role: 'SDE',
+    status: 'Married'
+  },
+  {
+    _id: ObjectId("657a0fc038fa200afd747413"),
+    name: 'Anil',
+    age: 27,
+    gender: 'M',
+    role: 'DA',
+    status: 'Married'
+  },
+  {
+    _id: ObjectId("657a0fc038fa200afd747414"),
+    name: 'Jaya',
+    age: 29,
+    role: 'Manager',
+    status: 'Unmarried'
+  },
+  {
+    _id: ObjectId("657a0fc038fa200afd747415"),
+    name: 'Nita',
+    age: 32,
+    gender: 'F',
+    role: 'CEO',
+    status: 'Married'
+  },
+  {
+    _id: ObjectId("657a103e38fa200afd747416"),
+    name: 'Ram',
+    age: 23,
+    role: 2,
+    status: 'Married',
+    isValid: false
+  }
+]
+GeeksforGeek> //Delete Documents that Don't Match the Schema
+
+GeeksforGeek> db.employee.deleteMany( { $nor: [ myschema ] } )
+{ acknowledged: true, deletedCount: 1 }
+GeeksforGeek>

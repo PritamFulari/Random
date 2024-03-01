@@ -1,0 +1,38 @@
+Specify Allowed Field Values in MongoDB
+
+db.createCollection("student", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["name"],
+      properties: {
+        name: {
+          bsonType: "string",
+          description: "must be a string and is required",
+        },
+        maritalStatus: {
+          bsonType: ["string"],
+          enum: ["Single", "Married"],
+          description: "must be a string and is not required",
+        },
+      },
+    },
+  },
+});
+
+Specific Allowed field specifies that you can use certain types of data only and not anything else is allowed.
+In JSON Schema we can specify what values  a particular field may have.
+Expected values are countable. It prevent the human error such as entering invalid data or typos.
+
+
+
+Who Specifies Allowed Field Values in MongoDB:
+
+Database administrators or developers define  the allowed field values in MongoDB .
+It is mention at the initial stage of the design or when updating documents.
+
+
+ Why Use Specified Allowed Field Values in MongoDB?
+ -It allows DBA to ensure that the data stored is accurate and consistent.
+ It helps in more efficient way for requesting for the documents.
+ It helps to adapt to changing business rules and increase system performance.

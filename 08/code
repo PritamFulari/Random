@@ -1,0 +1,42 @@
+PS C:\Users\HP> mongosh
+Current Mongosh Log ID: 659defa5425460ad1007a263
+Connecting to:          mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.0.1
+Using MongoDB:          7.0.2
+Using Mongosh:          2.0.1
+mongosh 2.1.1 is available for download: https://www.mongodb.com/try/download/shell
+
+For mongosh info see: https://docs.mongodb.com/mongodb-shell/
+
+------
+   The server generated these startup warnings when booting
+   2024-01-07T05:26:34.468+05:30: Access control is not enabled for the database. Read and write access to data and configuration is unrestricted
+------
+
+test> //Database
+
+test> use GeeksforGeeks;
+switched to db GeeksforGeeks
+GeeksforGeeks>
+
+GeeksforGeeks> // Create a collection with validation rules
+
+GeeksforGeeks> db.createCollection("voter", {validator: { $jsonSchema: { bsoGeeksforGeeks> //Database
+GeeksforGeeks> db.createCollection("Employee", {validator: {$jsonSchema: { bsonType: "object",required: ["Name", "joining_year", "Address"],properties: {Name: { bsonType: "string",  description: "Employee's name must be a stringGeeksforGeeks> db.createCollection("Employee", {validator: {$jsonSchema: { bsonType: "object",required: ["Name", "joining_year", "Address"],properties: {Name: { bsonType: "string",  description: "Employee's name must be a string", }, joining_year: {  bsonType: "int",  minimum: 2010,  maximum: 2024,  description:   "Employee's joining year must be an integer between 2000 and 2024", }, Address: { bsonType: "string", description: "Employee's Address must be a string", }, }, }, },})
+{ ok: 1 }
+GeeksforGeeks>
+GeeksforGeeks> db.runCommand({ insert: "Employee",documents: [ { name: "Anil", joining_year: 2005,Address: "Delhi" } ], bypassDocumentValidation: true})
+{ n: 1, ok: 1 }
+GeeksforGeeks>
+
+GeeksforGeeks> //Step 3. Check invalid document bypass validation rule.
+
+GeeksforGeeks> db.Employee.find();
+[
+  {
+    _id: ObjectId("659e029fc3e740f801761867"),
+    name: 'Anil',
+    joining_year: 2005,
+    Address: 'Delhi'
+  }
+]
+GeeksforGeeks>

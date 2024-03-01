@@ -1,0 +1,89 @@
+How do you specify validation with query operators in MongoDB for the  collection?
+-To specify validation with in MongoDB for the collection we use 'validator' method.
+This method allows to specify the rules or specific structure for the collection.
+we specify validation rules in JSON schema with '$jsonSchema'
+
+Why is specifying validation important in MongoDB?
+It is important because it helps to ensure data integrity and consistency.
+It helps to prevent invalid data insertion in document that dont satisfy the required structure.
+
+
+Who is responsible for defining and maintaining validation rules in MongoDB?
+-Database adminstrators(DBA), developers or individual who has access is responsible for defining and maintaining.
+DBA and developers decide the structure of the document as per the requirements of the application.
+
+db.createCollection("employee", { validator: { $jsonSchema: { bsonType: "object", required: ["name", "salary", "position"], properties: { name: { bsonType: "string", description: "must be a string and is required" },  salary: {  bsonType: "double", description: "must be a double and is required" }, position: { bsonType: "string", description: "must be a string and is required" },age: { bsonType: ["int", "null"], description: "must be an integer (or null) and is not required"  }, maritalStatus: { bsonType: ["string"], enum: ["Single", "Married"],  description: "must be a string and is not required"  },}}}});
+        
+      
+
+PS C:\Users\HP> mongosh
+Current Mongosh Log ID: 65892e6c8e7bf3bc7d65867b
+Connecting to:          mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.0.1
+Using MongoDB:          7.0.2
+Using Mongosh:          2.0.1
+mongosh 2.1.1 is available for download: https://www.mongodb.com/try/download/shell
+
+For mongosh info see: https://docs.mongodb.com/mongodb-shell/
+
+------
+   The server generated these startup warnings when booting
+   2023-12-24T23:21:01.949+05:30: Access control is not enabled for the database. Read and write access to data and configuration is unrestricted
+------
+
+test> use GFG;
+switched to db GFG
+GFG>
+
+GFG> db.createCollection("students", {validator: { $and: [{ name: { $type: "string" } },  { address: { $type: "string" } },  { age: { $type: "number", $gte: 8 } }, {$or: [ { address: "Mumbai" }, { address: "Pune" }  ] } ] }});
+{ ok: 1 }
+GFG>
+
+GFG>
+
+GFG> db.students.insertOne({name: "Ram", address: "Pune",age: 10});
+{
+  acknowledged: true,
+  insertedId: ObjectId("65892f5c8e7bf3bc7d65867c")
+}
+GFG>
+
+GFG>
+
+GFG> db.students.insertOne({name: "Sam", address: "Pune",age: 4});
+Uncaught:
+MongoServerError: Document failed validation
+Additional information: {
+  failingDocumentId: ObjectId("65892f718e7bf3bc7d65867d"),
+  details: {
+    operatorName: '$and',
+    clausesNotSatisfied: [
+      {
+        index: 2,
+        details: {
+          operatorName: '$and',
+          clausesNotSatisfied: [
+            {
+              index: 1,
+              details: {
+                operatorName: '$gte',
+                specifiedAs: { age: { '$gte': 8 } },
+                reason: 'comparison failed',
+                consideredValue: 4
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
+GFG>
+
+GFG> //Make the document valid and insert it.
+
+GFG> db.students.insertOne({name: "Sam", address: "Pune",age: 20});
+{
+  acknowledged: true,
+  insertedId: ObjectId("65892fcd8e7bf3bc7d65867e")
+}
+GFG>

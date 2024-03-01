@@ -1,0 +1,171 @@
+PS C:\Users\HP> mongosh
+Current Mongosh Log ID: 657ea9ca4e996eac152a2b5f
+Connecting to:          mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.0.1
+Using MongoDB:          7.0.2
+Using Mongosh:          2.0.1
+mongosh 2.1.1 is available for download: https://www.mongodb.com/try/download/shell
+
+For mongosh info see: https://docs.mongodb.com/mongodb-shell/
+
+------
+   The server generated these startup warnings when booting
+   2023-12-15T12:23:58.812+05:30: Access control is not enabled for the database. Read and write access to data and configuration is unrestricted
+------
+
+test> use GeeksforGeek;
+switched to db GeeksforGeek
+GeeksforGeek> //
+
+GeeksforGeek> //Create  Collection with validation rules
+
+GeeksforGeek> 
+db.createCollection("voter", {validator: { $jsonSchema: { bsonType: "object", required: ["voter_ID", "name", "age"],properties: {voterID: { bsonType: "int", description: "must be an integer and is required"  },name: { bsonType: "string",  description: "must be a string and is required" }, age: { bsonType: "int", minimum: 18, description: "must be an integer greater than or equal to 18"  },} }}, validationLevel: "strict"});
+{ ok: 1 }
+GeeksforGeek>
+
+GeeksforGeek> //insert a valid document
+
+GeeksforGeek> db.voter.insertMany([{ voter_ID:101,name:"Ajay",age:19},{voter_ID: 102,name: "Atul",age: 20}] );
+{
+  acknowledged: true,
+  insertedIds: {
+    '0': ObjectId("657eaa404e996eac152a2b60"),
+    '1': ObjectId("657eaa404e996eac152a2b61")
+  }
+}
+GeeksforGeek> //
+
+GeeksforGeek> // modify the validation rules using collMod command;
+
+GeeksforGeek> db.runCommand({collMod: "voter",validator: { $jsonSchema: { bsonType: "object", required: ["voter_ID", "name", "age", ],properties: { voter_ID: {  bsonType: "int", description: "must be an integer and is required" }, name: { bsonType: "string", description: "must be a string and is required" }, age: {  bsonType: "int",  minimum: 21,   description: "must be an integer greater than or equal to 21" } } } }, validationLevel: "strict"});
+{ ok: 1 }
+GeeksforGeek>
+
+GeeksforGeek> //1 Result : Insertion of invalid document;
+
+GeeksforGeek> 
+db.voter.insertOne({voter_ID: 103,name: "Anil",age: 20} );
+Uncaught:
+MongoServerError: Document failed validation
+Additional information: {
+  failingDocumentId: ObjectId("657eaa974e996eac152a2b62"),
+  details: {
+    operatorName: '$jsonSchema',
+    schemaRulesNotSatisfied: [
+      {
+        operatorName: 'properties',
+        propertiesNotSatisfied: [
+          {
+            propertyName: 'age',
+            description: 'must be an integer greater than or equal to 21',
+            details: [
+              {
+                operatorName: 'minimum',
+                specifiedAs: { minimum: 21 },
+                reason: 'comparison failed',
+                consideredValue: 20
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+GeeksforGeek> //
+
+GeeksforGeek> //2nd Result : Insertion of valid document with age above 21
+
+GeeksforGeek> db.voter.insertOne({voter_ID: 103,name: "Anil",age: 22} );
+{
+  acknowledged: true,
+  insertedId: ObjectId("657eaada4e996eac152a2b63")
+}
+GeeksforGeek>
+
+GeeksforGeek> db.voter.find();
+[
+  {
+    _id: ObjectId("657eaa404e996eac152a2b60"),
+    voter_ID: 101,
+    name: 'Ajay',
+    age: 19
+  },
+  {
+    _id: ObjectId("657eaa404e996eac152a2b61"),
+    voter_ID: 102,
+    name: 'Atul',
+    age: 20
+  },
+  {
+    _id: ObjectId("657eaada4e996eac152a2b63"),
+    voter_ID: 103,
+    name: 'Anil',
+    age: 22
+  }
+]
+GeeksforGeek> // check valid documents in collection
+
+GeeksforGeek> db.runCommand({ validate: "voter",full: false  });
+{
+  ns: 'GeeksforGeek.voter',
+  uuid: new UUID("3055985b-edfc-4c41-84e8-33e2b0881f01"),
+  nInvalidDocuments: 0,
+  nNonCompliantDocuments: 2,
+  nrecords: 3,
+  nIndexes: 1,
+  keysPerIndex: { _id_: 0 },
+  indexDetails: { _id_: { valid: true } },
+  valid: false,
+  repaired: false,
+  warnings: [],
+  errors: [
+    "Detected one or more documents not compliant with the collection's schema. Check logs for log id 5363500."
+  ],
+  extraIndexEntries: [],
+  missingIndexEntries: [],
+  corruptRecords: [],
+  advice: 'A corrupt namespace has been detected. See http://dochub.mongodb.org/core/data-recovery for recovery steps.',
+  ok: 1
+}
+GeeksforGeek>
+
+GeeksforGeek> db.runCommand({ validate: "voter",full: true  });
+{
+  ns: 'GeeksforGeek.voter',
+  uuid: new UUID("3055985b-edfc-4c41-84e8-33e2b0881f01"),
+  nInvalidDocuments: 0,
+  nNonCompliantDocuments: 2,
+  nrecords: 3,
+  nIndexes: 1,
+  keysPerIndex: { _id_: 0 },
+  indexDetails: { _id_: { valid: true } },
+  valid: false,
+  repaired: false,
+  warnings: [],
+  errors: [
+    "Detected one or more documents not compliant with the collection's schema. Check logs for log id 5363500."
+  ],
+  extraIndexEntries: [],
+  missingIndexEntries: [],
+  corruptRecords: [],
+  advice: 'A corrupt namespace has been detected. See http://dochub.mongodb.org/core/data-recovery for recovery steps.',
+  ok: 1
+}
+GeeksforGeek> // Remove thee invalid documents
+
+GeeksforGeek> db.voter.remove({ age: { $lt: 21 } });
+DeprecationWarning: Collection.remove() is deprecated. Use deleteOne, deleteMany, findOneAndDelete, or bulkWrite.
+{ acknowledged: true, deletedCount: 2 }
+GeeksforGeek> //query for the valid
+
+GeeksforGeek> db.voter.find();
+[
+  {
+    _id: ObjectId("657eaada4e996eac152a2b63"),
+    voter_ID: 103,
+    name: 'Anil',
+    age: 22
+  }
+]
+GeeksforGeek>

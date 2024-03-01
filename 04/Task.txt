@@ -1,0 +1,108 @@
+Modify Schema Validation
+
+Validation rules decide the  structure of the collection.The documents that satisfy 
+the Validation rule are called valid documents and those that dont satisfy are invalid documents.
+Validation rules can be changed at any time. Validation rules are modified using collMod command in the validator object.
+Validation level,validation rules ,validation action can be modified.
+
+
+Points to remember :
+Initially valid documents can change to invalid after modification in validation rules.
+Validation rules can be applied to a collection which was defined without valdiation rules.
+
+// db.createCollection("users", {validator: {$jsonSchema: { bsonType: "object",required: [ "username", "password" ], properties: {  username: {    bsonType: "string",    description: "must be a string and is required" }, password: {    bsonType: "string",  minLength: 8,  description: "must be a string at least 8 characters long, and is required"  }  }  }}} )
+
+
+
+Example:
+db.createCollection("voter", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["voter_ID", "name", "age"],
+      properties: {
+        voterID: {
+          bsonType: "int",
+          description: "must be an integer and is required"
+        },
+        name: {
+          bsonType: "string",
+          description: "must be a string and is required"
+        },
+        age: {
+          bsonType: "int",
+          minimum: 18,
+          description: "must be an integer greater than or equal to 18"
+        },
+      }
+    }
+  },
+  validationLevel: "strict"
+});
+
+
+db.createCollection("voter", {validator: { $jsonSchema: { bsonType: "object", required: ["voter_ID", "name", "age"],properties: {voterID: { bsonType: "int", description: "must be an integer and is required"  },name: { bsonType: "string",  description: "must be a string and is required" }, age: { bsonType: "int", minimum: 18, description: "must be an integer greater than or equal to 18"  },} }}, validationLevel: "strict"});
+
+
+*******************************************************
+db.runCommand({
+  collMod: "voter",
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["voter_ID", "name", "age", "address"],
+      properties: {
+        voter_ID: {
+          bsonType: "int",
+          description: "must be an integer and is required"
+        },
+        name: {
+          bsonType: "string",
+          description: "must be a string and is required"
+        },
+        age: {
+          bsonType: "int",
+          minimum: 21, 
+          description: "must be an integer greater than or equal to 21"
+        }
+      }
+    }
+  },
+  validationLevel: "strict"
+});
+
+db.runCommand({collMod: "voter",validator: { $jsonSchema: { bsonType: "object", required: ["voter_ID", "name", "age", "address"],properties: { voter_ID: {  bsonType: "int", description: "must be an integer and is required" }, name: { bsonType: "string", description: "must be a string and is required" }, age: {  bsonType: "int",  minimum: 21,   description: "must be an integer greater than or equal to 21" } } } }, validationLevel: "strict"});
+
+
+******************************************************
+
+db.runCommand({
+  validate: "voters",
+  full: true  // Include details of all validation issues
+});
+
+db.runCommand({ validate: "voter",full: false  });
+
+******************************************************
+
+db.voters.update(
+   { age: { $lt: 21 } },
+   { $set: { age: 21 } },
+   { multi: true }
+);
+
+db.voter.update({ age: { $lt: 21 } },{ $set: { age: 21 } },{ multi: true });
+
+******************************************************
+
+
+
+
+
+
+
+
+
+
+//
+db.runCommand( { collMod: "users", validator: {  $jsonSchema: {   bsonType: "object",required: [ "username", "password" ], properties: { username: {  bsonType: "string",  description: "must be a string and is required" }, password: {  bsonType: "string",  minLength: 12,  description: "must be a string of at least 12 characters, and is required"  }  }} }} )

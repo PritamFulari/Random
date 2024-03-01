@@ -1,0 +1,10 @@
+db.createCollection("students", {validator: { $and: [{ name: { $type: "string" } },  { address: { $type: "string" } },  { age: { $type: "number", $gte: 8 } }, {$or: [ { address: "Mumbai" }, { address: "Pune" }  ] } ] }});
+
+
+Satisfy
+
+db.students.insertOne({name: "Ram", address: "Pune",age: 10});
+
+
+
+db.students.insertOne({name: "Sam", address: "Pune",age: 4});
